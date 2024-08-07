@@ -21,7 +21,9 @@ const debug = argv['debug'] ? true : false
 const skipCmdNames = ['temperatureUnit']
 const publicValDirect = ['power', 'health', 'powerSave', 'lights', 'quiet', 'blow', 'sleep', 'turbo']
 const onStatus = function (deviceModel, changed) {
+  // console.log("[DEBUG] onStatus called:", JSON.stringify({"deviceModel.name": deviceModel.name, changed}))
   const publish = (name, val) => {
+    // console.log("Publish:",JSON.stringify({name, val}))
     publish2mqtt(val, deviceModel.mac + '/' + name.toLowerCase())
     if (!deviceModel.isSubDev)
       publish2mqtt(val, name.toLowerCase())
@@ -47,6 +49,8 @@ const onStatus = function (deviceModel, changed) {
     }
     publish(name, val)
   }
+  publish('firmware', deviceModel.controller.controller.firmware)
+  publish('ip', deviceModel.controller.controller.address)
 }
 
 const onSetup = function (deviceModel) {
@@ -83,7 +87,8 @@ const onSetup = function (deviceModel) {
     let enabled_commands
     if (argv['homeassistant-mqtt-discovery-enable'])
       enabled_commands = argv['homeassistant-mqtt-discovery-enable'].split(',')
-    HA_DISCOVERY.REGISTER(enabled_commands)
+    // HA_DISCOVERY.REGISTER(enabled_commands)
+    HA_DISCOVERY.REGISTER_ALL()
   }
 }
 
@@ -94,7 +99,7 @@ const deviceOptions = {
   debug: debug,
   onStatus: (deviceModel, changed) => {
     onStatus(deviceModel, changed)
-    console.log('[UDP] deviceOptions.onStatus:', JSON.stringify({ ip: deviceModel.address, changed }))
+    // console.log('[UDP] deviceOptions.onStatus:', JSON.stringify({ ip: deviceModel.address, changed }))
   },
   onUpdate: (deviceModel, changed) => {
     onStatus(deviceModel, changed)
@@ -102,7 +107,7 @@ const deviceOptions = {
   },
   onSetup: onSetup,
   onConnected: (deviceModel) => {
-    console.log('[UDP] deviceOptions.onConnected:', JSON.stringify({ ip: deviceModel.address }))
+    // console.log('[UDP] deviceOptions.onConnected:', JSON.stringify({ ip: deviceModel.address }))
   }
 }
 

@@ -102,10 +102,11 @@ class Controller {
     this.controller.port = port
     this.controller.bound = false
     this.controller.devices = {}
+    this.controller.firmware = pack.hid || "unknown"
 
-    console.log('[UDP] New Controller registered: %s', this.controller.name)
+    console.log('[UDP] Controller registered: ', JSON.stringify(this.controller))
   }
-
+x
   /**
      * Register new device locally
      * @param {string} mac - Device mac address
@@ -130,7 +131,7 @@ class Controller {
     }
 
     this.controller.devices[mac] = new Device(this, options)
-    console.log('[UDP] New Device registered: %s', name)
+    console.log('[UDP] Device registered: %s', JSON.stringify(options))
   }
 
   /**
@@ -152,7 +153,7 @@ class Controller {
   _confirmBinding (key) {
     this.controller.bound = true
     this.controller.key = key
-    console.log('[UDP] Controller %s is bound!', this.controller.name)
+    console.log('[UDP] Controller bound:', JSON.stringify(this.controller))
   }
 
   /**
@@ -173,10 +174,12 @@ class Controller {
      */
   _requestDeviceStatus (device) {
     const pack = {
-      cols: Object.keys(cmd).map(key => cmd[key].code),
+      cols: (Object.keys(cmd).map(key => cmd[key].code)),
       mac: device.mac,
       t: 'status'
     }
+    // pack.cols.push('TemSen')
+    // console.log("[_requestDeviceStatus]", pack) //TemsSenOut works
     this._sendRequest(pack)
   }
 
@@ -266,7 +269,7 @@ class Controller {
     const serializedRequest = Buffer.from(JSON.stringify(request))
     socket.send(serializedRequest, 0, serializedRequest.length, this.controller.port, this.controller.address)
 
-    this.debug && console.log("_sendRequest:", JSON.stringify({pack, request}))
+    console.log("_sendRequest:", JSON.stringify({pack, request}))
   };
 
 };
@@ -328,8 +331,10 @@ class Device {
       }
       if(cmd[name].value)
         state = Object.keys(cmd[name].value).find(k => cmd[name].value[k] === changedProps[key])
-      else
+      else {
         state = changedProps[key]
+        if (key === 'TemSen') state -= 40 // temperature sensor has an offset of +40 to avoid using negative values
+      }
       res[name] = {value: changedProps[key], state}
       this.debug && console.log("[UDP][Debug][Status Prepare] %s %s: %s -> %s %s", this.name, this.mac, name, state, changedProps[key])
     }
@@ -344,13 +349,16 @@ class Device {
      */
   _handleDat (pack) {
     const changed = {}
+    console.log("_handleDat pack:", pack)
     pack.cols.forEach((col, i) => {
-      if(this.props[col] !== pack.dat[i])
+      if(this.props[col] !== pack.dat[i]) // comment out to publish all values even if not chagned
         changed[col] = pack.dat[i]
       this.props[col] = pack.dat[i]
     })
+
     if(Object.keys(changed).length > 0)
       this.callbacks.onStatus(this, this._prepareCallback(changed))
+    
     return
   }
 
@@ -379,16 +387,17 @@ class Device {
      * @param {number[]} values List of values
      */
   _sendCommand (commands = [], values = []) {
+    // console.log("_sendCommand:", _sendCommand)
     const pack = {
       opt: commands,
       p: values,
       t: 'cmd'
     }
-    // const pack = {
-    //   opt: commands.push('Buzzer_ON_OFF'),
-    //   p: values.push('1'),
-    //   t: 'cmd'
-    // }
+
+    // Silent mode
+    pack.opt.unshift('Buzzer_ON_OFF')
+    pack.p.unshift(1)
+
     if(this.isSubDev)
       pack.sub = this.mac
     this.controller._sendRequest(pack)
@@ -556,6 +565,7 @@ class Device {
       [value ? 1 : 0]
     )
   };
+
 };
 
 module.exports.connect = function (options) {
