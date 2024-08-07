@@ -178,7 +178,9 @@ x
       mac: device.mac,
       t: 'status'
     }
-    // pack.cols.push('TemSen')
+    // pack.cols.push('host') // query keepalive hostname ( eu.dis.gree.com )
+    // pack.cols.push('name') // query device name
+    // console.log("_requestDeviceStatus pack:", pack)
     // console.log("[_requestDeviceStatus]", pack) //TemsSenOut works
     this._sendRequest(pack)
   }
@@ -269,7 +271,7 @@ x
     const serializedRequest = Buffer.from(JSON.stringify(request))
     socket.send(serializedRequest, 0, serializedRequest.length, this.controller.port, this.controller.address)
 
-    console.log("_sendRequest:", JSON.stringify({pack, request}))
+    // console.log("_sendRequest:", JSON.stringify({pack, request}))
   };
 
 };
@@ -349,7 +351,7 @@ class Device {
      */
   _handleDat (pack) {
     const changed = {}
-    console.log("_handleDat pack:", pack)
+    // console.log("_handleDat pack:", pack)
     pack.cols.forEach((col, i) => {
       if(this.props[col] !== pack.dat[i]) // comment out to publish all values even if not chagned
         changed[col] = pack.dat[i]
@@ -395,8 +397,8 @@ class Device {
     }
 
     // Silent mode
-    pack.opt.unshift('Buzzer_ON_OFF')
-    pack.p.unshift(1)
+    pack.opt.push('Buzzer_ON_OFF')
+    pack.p.push(1)
 
     if(this.isSubDev)
       pack.sub = this.mac

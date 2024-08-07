@@ -2,6 +2,15 @@
 
 Bridge service for communicating with Gree air conditioners using MQTT broadcasts. It can also be used as a [Hass.io](https://home-assistant.io/) addon.
 
+## TODO
+- Implement dummy server - https://github.com/Hagakurje/GreeAC-DummyServer/blob/master/China%20Server%20Protokoll.txt
+- Implement host configurator - https://github.com/Hagakurje/GreeAC-ConfigTool/blob/master/Program.cs
+~~~
+    pack["opt"] = ['host']
+    pack["p"] = ['eu.dis.gree.com']
+    pack["t"] = "cmd";
+~~~
+
 ## Requirements
 
 - NodeJS (>=11.0.0) with NPM
