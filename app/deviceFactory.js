@@ -36,6 +36,8 @@ class Controller {
 
     this.debug = this.options.debug
 
+    console.log("Debug mode:", this.debug)
+
     /**
          * Controller object
          * @type {object}
@@ -191,7 +193,7 @@ class Controller {
     const pack = encryptionService.decrypt(message, (this.controller || {}).key)
     const type = pack.t || ''
 
-    console.log("_handleResponse", JSON.stringify({pack}))
+    this.debug && console.log("_handleResponse", JSON.stringify({pack}))
 
     // If package type is response to handshake
     if (type === 'dev') {
@@ -263,7 +265,7 @@ class Controller {
     const serializedRequest = Buffer.from(JSON.stringify(request))
     socket.send(serializedRequest, 0, serializedRequest.length, this.controller.port, this.controller.address)
 
-    console.log("_sendRequest:", JSON.stringify({pack, request}))
+    this.debug && console.log("_sendRequest:", JSON.stringify({pack, request}))
   };
 
 };
