@@ -95,7 +95,7 @@ class HOMEASSISTANT_DISCOVERY{
         const component = 'climate'
         const DISCOVERY_MSG = {
             'name': 'Climate',
-
+            'icon': 'mdi:air-conditioner',
             'temperature_state_topic':    this.mqttDeviceTopic + "/temperature/get",
             'temperature_command_topic':  this.mqttDeviceTopic + "/temperature/set",
             'mode_state_topic':           this.mqttDeviceTopic + "/mode/get",
