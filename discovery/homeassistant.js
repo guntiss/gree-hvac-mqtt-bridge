@@ -105,6 +105,7 @@ class HOMEASSISTANT_DISCOVERY{
             'fan_mode_command_topic':     this.mqttDeviceTopic + "/fanspeed/set",
             'swing_mode_state_topic':     this.mqttDeviceTopic + "/swingvert/get",
             'swing_mode_command_topic':   this.mqttDeviceTopic + "/swingvert/set",
+            'power_command_topic':        this.mqttDeviceTopic + "/power/set",
 
             'modes': ['off', ...Object.keys(commands.mode.value)],
             'fan_modes': Object.keys(commands.fanSpeed.value),
@@ -176,7 +177,18 @@ class HOMEASSISTANT_DISCOVERY{
     }
 
     _register_tempsensor() {
-        return this.__register_sensor('tempsensor', 'Temperature sensor') // TODO: Add temp icon
+        // return this.__register_sensor('tempsensor', 'Temperature sensor')
+        const name = 'Temperature sensor'
+        const entity = 'tempsensor'
+
+        const component = 'sensor'
+        const DISCOVERY_MSG = {
+            'name': name,
+            'icon': 'mdi:thermometer',
+            'state_topic': this.mqttDeviceTopic + '/' + entity + '/get',
+            'unit_of_measurement': '°C'
+        }
+        this._publish(DISCOVERY_MSG, component, entity)
     }
 
     //Common Switch Register
