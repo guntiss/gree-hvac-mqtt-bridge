@@ -92,10 +92,11 @@ class Controller {
      * @param {number} port - Port number
      */
   _setController (message, pack, address, port) {
+    // console.log("_setController debug pack:", pack)
     this.controller.cid = message.cid
     this.controller.uid = message.uid || 0
     this.controller.mac = pack.mac
-    this.controller.name = pack.name
+    this.controller.name = pack.name || pack.mac
     this.controller.subCnt = pack.subCnt || 0
     this.controller.address = address
     this.controller.port = port

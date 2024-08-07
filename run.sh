@@ -32,9 +32,10 @@ if [ "$INSTANCES" -gt 1 ]; then
 			--mqtt-username="${MQTT_USERNAME}" \
 			--mqtt-password="${MQTT_PASSWORD}" \
 			--mqtt-retain="${MQTT_RETAIN}" \
-			--debugX="${DEBUG}"
+			--debugX="${DEBUG}" \
+			--homeassistant-mqtt-discovery="true"
 	done
-	npx pm2 logs /HVAC_/
+	npx pm2 logs
 else
 	HVAC_HOST=$(jq -r ".devices[0].hvac_host" $CONFIG_PATH);
 	MQTT_TOPIC_PREFIX=$(jq -r ".devices[0].mqtt_topic_prefix" $CONFIG_PATH);
@@ -46,5 +47,5 @@ else
 		--mqtt-username="${MQTT_USERNAME}" \
 		--mqtt-password="${MQTT_PASSWORD}" \
 		--mqtt-retain="${MQTT_RETAIN}" \
-		--debugX="${DEBUG}"
+		--homeassistant-mqtt-discovery="true"
 fi
