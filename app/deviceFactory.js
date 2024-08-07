@@ -191,6 +191,8 @@ class Controller {
     const pack = encryptionService.decrypt(message, (this.controller || {}).key)
     const type = pack.t || ''
 
+    console.log("_handleResponse", JSON.stringify({pack}))
+
     // If package type is response to handshake
     if (type === 'dev') {
       this._setController(message, pack, rinfo.address, rinfo.port)
@@ -260,6 +262,8 @@ class Controller {
     }
     const serializedRequest = Buffer.from(JSON.stringify(request))
     socket.send(serializedRequest, 0, serializedRequest.length, this.controller.port, this.controller.address)
+
+    console.log("_sendRequest:", JSON.stringify({pack, request}))
   };
 
 };
@@ -356,8 +360,11 @@ class Device {
   _handleRes (pack) {
     const changed = {}
     pack.opt.forEach((opt, i) => {
-      changed[opt] = pack.val[i]
-      this.props[opt] = pack.val[i]
+      console.log("[DEBUG] Packs:",JSON.stringify({pack, opt, i}))
+      if (pack?.val && i in pack.val) { // TODO: Fixme - returns empty, added this to prevent crashing
+        changed[opt] = pack?.val[i]
+        this.props[opt] = pack?.val[i]
+      }
     })
     this.callbacks.onUpdate(this, this._prepareCallback(changed))
     return
@@ -374,6 +381,11 @@ class Device {
       p: values,
       t: 'cmd'
     }
+    // const pack = {
+    //   opt: commands.push('Buzzer_ON_OFF'),
+    //   p: values.push('1'),
+    //   t: 'cmd'
+    // }
     if(this.isSubDev)
       pack.sub = this.mac
     this.controller._sendRequest(pack)

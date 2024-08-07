@@ -25,7 +25,7 @@ if [ "$INSTANCES" -gt 1 ]; then
 		if [[ $HVAC_HOST = null ]]; then echo "[ERROR] Missing hvac_host for device $i. Skipping." && continue; fi
 		if [[ $MQTT_TOPIC_PREFIX = null ]]; then echo "[ERROR] Missing mqtt_topic_prefix for device $i. Skipping." && continue; fi
 		echo "Running instance $i for $HVAC_HOST"
-		npx pm2 start index.js --silent -m --merge-logs --name="HVAC_${i}" -- \
+		npx pm2 start index.js --watch --silent -m --merge-logs --name="HVAC_${i}" -- \
 			--hvac-host="${HVAC_HOST}" \
 			--mqtt-broker-url="${MQTT_BROKER_URL}" \
 			--mqtt-topic-prefix="${MQTT_TOPIC_PREFIX}" \
@@ -39,7 +39,7 @@ else
 	MQTT_TOPIC_PREFIX=$(jq -r ".devices[0].mqtt_topic_prefix" $CONFIG_PATH);
 	echo "Running single instance for $HVAC_HOST"
 	#echo "${HVAC_HOST}, ${MQTT_BROKER_URL}, ${MQTT_TOPIC_PREFIX}, ${MQTT_USERNAME}, ${MQTT_PASSWORD}"
-	/usr/bin/node index.js \
+	/usr/bin/node --watch index.js \
 		--hvac-host="${HVAC_HOST}" \
 		--mqtt-broker-url="${MQTT_BROKER_URL}" \
 		--mqtt-topic-prefix="${MQTT_TOPIC_PREFIX}" \

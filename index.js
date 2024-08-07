@@ -92,15 +92,15 @@ const deviceOptions = {
   debug: debug,
   onStatus: (deviceModel, changed) => {
     onStatus(deviceModel, changed)
-    console.log('[UDP] Status changed on %s: %s', deviceModel.name, changed)
+    console.log('[UDP] deviceOptions.onStatus:', JSON.stringify({ip: deviceModel.address, changed}))
   },
   onUpdate: (deviceModel, changed) => {
     onStatus(deviceModel, changed)
-    console.log('[UDP] Status updated on %s: %s', deviceModel.name, changed)
+    console.log('[UDP] deviceOptions.onUpdate:', JSON.stringify({ip: deviceModel.address, changed}))
   },
   onSetup: onSetup,
   onConnected: (deviceModel) => {
-
+    console.log('[UDP] deviceOptions.onConnected:', JSON.stringify({ip: deviceModel.address}))
   }
 }
 
