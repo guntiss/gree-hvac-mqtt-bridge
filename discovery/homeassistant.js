@@ -27,7 +27,7 @@ class HOMEASSISTANT_DISCOVERY{
         this.mqttPubOptions = options.mqttPubOptions || {}
         this.mqttPubInterval = options.mqttPubInterval*1000 || 600*1000
 
-        this.unique_id = 'gree_' + this.device_mac
+        this.unique_id = 'gree_' + this.device_mac // TODO: Would be better to use "name" value from config (by mapping IP to device)
 
         this.DEVMSG = {
             device: {

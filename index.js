@@ -160,7 +160,6 @@ client.on('connect', () => {
 })
 
 client.on('message', (topic, message) => {
-  message = message.toString().toLowerCase()
   console.log('[MQTT] Message "%s" received for %s', message, topic)
 
   if (topic.startsWith(mqttTopicPrefix)) {
@@ -173,7 +172,7 @@ client.on('message', (topic, message) => {
         device.setTemp(parseInt(message))
         return
       case 'mode':
-        if (message === 'off') {
+        if (message.toLowerCase() === 'off') {
           device.setPower(commands.power.value.off)
         }
         else {
@@ -189,15 +188,16 @@ client.on('message', (topic, message) => {
         device.setSwingHor(commands.swingHor.value[message])
         return
       case 'swingvert':
+        console.log('set swingvert:')
         device.setSwingVert(commands.swingVert.value[message])
         return
       case 'power':
         console.log("process power", {message, props: device.props})
         // device.setPower(parseInt(message))
-        if (message === 'off') {
+        if (message.toLowerCase() === 'off') {
           device.setPower(commands.power.value.off)
         }
-        else if (message === 'on' && device.props[commands.power.code] === commands.power.value.off) { // make sure its really off
+        else if (message.toLowerCase() === 'on' && device.props[commands.power.code] === commands.power.value.off) { // make sure its really off
             device.setPower(commands.power.value.on)
             device.setMode(commands.mode.value.cool) // default mode cool if powered off?
           }
