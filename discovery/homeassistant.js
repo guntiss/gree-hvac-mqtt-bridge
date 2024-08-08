@@ -108,7 +108,8 @@ class HOMEASSISTANT_DISCOVERY{
             'power_command_topic':        this.mqttDeviceTopic + "/power/set",
 
             'modes': ['off', ...Object.keys(commands.mode.value)],
-            'fan_modes': Object.keys(commands.fanSpeed.value),
+            // 'fan_modes': Object.keys(commands.fanSpeed.value),
+            'fan_modes': ['low', 'auto', 'high'],
             'swing_modes': Object.keys(commands.swingVert.value),
         }
         const DISCOVERY_Optional = {}

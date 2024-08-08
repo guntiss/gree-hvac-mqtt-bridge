@@ -95,11 +95,11 @@ const onSetup = function (deviceModel) {
 const deviceOptions = {
   host: argv['hvac-host'],
   controllerOnly: argv['controllerOnly'] ? true : false,
-  pollingInterval: parseInt(argv['polling-interval']) * 1000 || 3000,
+  pollingInterval: parseInt(argv['polling-interval']) * 1000 || 1000,
   debug: debug,
   onStatus: (deviceModel, changed) => {
     onStatus(deviceModel, changed)
-    // console.log('[UDP] deviceOptions.onStatus:', JSON.stringify({ ip: deviceModel.address, changed }))
+    console.log('[UDP] deviceOptions.onStatus:', JSON.stringify({ ip: deviceModel.address, changed }))
   },
   onUpdate: (deviceModel, changed) => {
     onStatus(deviceModel, changed)
@@ -182,7 +182,45 @@ client.on('message', (topic, message) => {
         }
         return
       case 'fanspeed':
-        device.setFanSpeed(commands.fanSpeed.value[message])
+        // console.log( "changing fanspeed to:", String(message))
+
+        let c, v = []
+        if (message == 'high' || message == 'turbo') {
+          c.push(commands.fanSpeed.code)
+          v.push(commands.fanSpeed.value[message])
+
+          c.push(commands.turbo.code)
+          v.push(1)
+
+          c.push(commands.quiet.code)
+          v.push(0)
+          // c.push(commands.swingVert.code)
+          // v.push(6)
+        }
+        else if (message == 'low') {
+          c.push(commands.fanSpeed.code)
+          v.push(commands.fanSpeed.value[message])
+
+          c.push(commands.turbo.code)
+          v.push(0)
+
+          c.push(commands.quiet.code)
+          v.push(1)
+        }
+        else {
+          c.push(commands.fanSpeed.code)
+          v.push(commands.fanSpeed.value[message])
+
+          c.push(commands.turbo.code)
+          v.push(1)
+
+          c.push(commands.quiet.code)
+          v.push(0) 
+        }
+        device._sendCommand(c, v)
+        // console.log("debug fan:",{c, v})
+
+        // device.setFanSpeed(commands.fanSpeed.value[message])
         return
       case 'swinghor':
         device.setSwingHor(commands.swingHor.value[message])
@@ -226,6 +264,7 @@ client.on('message', (topic, message) => {
       case 'turbo':
         device.setTurbo(parseInt(message))
         return
+      // TODO: Implement dynamic command for scripts, to set multiple parameters at once
     }
   }
   console.log('[MQTT] No handler for topic %s', topic)

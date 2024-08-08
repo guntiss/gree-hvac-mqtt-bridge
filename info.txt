@@ -1,3 +1,10 @@
 docker build --build-arg BUILD_FROM="homeassistant/amd64-base:latest" -t gree-hvac-mqtt-bridge .
 docker run --rm -v "$PWD/data":/data -v "$PWD":/usr/src/app gree-hvac-mqtt-bridge
  
+
+TODO PRESETS:
+
+1) Boost - 16c, fan: high, pos: bottom
+2) Normal - 22c, fan: auto, pos: top
+3) Sleep - 21c, fan: low, pos: top
+
